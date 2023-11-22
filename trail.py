@@ -1,15 +1,21 @@
-import serial
+from smbus import SMBus
 import time
 
-ser = serial.Serial('/dev/ttyACM0', 9600)  # Serial port and baud rate
+bus = SMBus(1)
+address = 0x08  # Arduino's I2C address
 
 def receive_sensor_data():
     try:
         while True:
-            if ser.in_waiting > 0:
-                # Read and print sensor data received from Arduino
-                sensor_data = ser.readline().decode('utf-8').rstrip()
-                print("Received Vibration Sensor Value:", sensor_data)
+            # Read two bytes from Arduino (higher and lower bytes)
+            high_byte = bus.read_byte(address)
+            low_byte = bus.read_byte(address)
+            
+            # Combine two bytes to get the sensor value
+            sensor_value = (high_byte << 8) | low_byte
+            
+            # Print received sensor data
+            print("Received Vibration Sensor Value:", sensor_value)
             
             time.sleep(1)  # Adjust delay as needed
     except KeyboardInterrupt:
