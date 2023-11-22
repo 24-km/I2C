@@ -1,8 +1,7 @@
-import smbus
-import time
+from gpiozero import SMBus
 
 address = 0x08  # Arduino I2C address
-bus = smbus.SMBus(1)  # 1 indicates /dev/i2c-1
+bus = SMBus(1)  # 1 indicates /dev/i2c-1
 
 def read_vibration_value():
     try:
@@ -17,7 +16,7 @@ try:
         vibration_value = read_vibration_value()
 
         if vibration_value is not None:
-            print(f"Vibration Value: {vibration_value}")
+            print(f"Received Vibration Value: {vibration_value}")
 
         time.sleep(1)  # Adjust the sleep time based on your needs
 
