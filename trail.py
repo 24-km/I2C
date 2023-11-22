@@ -1,33 +1,36 @@
 import serial
 import time
 
-# Serial port and baud rate
-ser = serial.Serial('/dev/ttyACM0', 9600)  # Replace '/dev/ttyACM0' with the appropriate port
+# Establish serial connection with the Arduino
+ser = serial.Serial('/dev/ttyACM0', 9600)  # Replace '/dev/ttyACM0' with the correct port
 
-def receive_data():
+def receive_sensor_data():
     try:
         while True:
             if ser.in_waiting > 0:
-                # Read received data from Arduino via serial
-                received_data = ser.readline().decode('utf-8').rstrip()
-                process_received_data(received_data)
+                # Read data from Arduino
+                data = ser.readline().decode('utf-8').rstrip()
+                process_sensor_data(data)
             
-            time.sleep(0.1)  # Adjust delay as needed
+            time.sleep(1)  # Adjust delay as needed
     except KeyboardInterrupt:
-        pass
+        ser.close()
 
-def process_received_data(data):
-    # Interpret the received data based on the type of sensor
+def process_sensor_data(data):
+    # Split the received data based on the sensor identifier
     sensor_data = data.split(':')
     if len(sensor_data) == 2:
         sensor_type, value = sensor_data[0], sensor_data[1]
         
-        if sensor_type == 'SPEED':
-            print(f"SPEED: {value}")
-        elif sensor_type == 'Vibration Sensor':
-            print(f"Vibration Sensor: {value}")
-        elif sensor_type == 'Sound Sensor':
-            print(f"Sound Sensor: {value}")
+        if sensor_type == 'VIBRATION':
+            print(f"Received Vibration Sensor Value: {value}")
+            # Add your processing or logic for vibration sensor data here
+        elif sensor_type == 'SPEED':
+            print(f"Received Speed Value: {value}")
+            # Add your processing or logic for speed data here
+        elif sensor_type == 'SOUND':
+            print(f"Received Sound Sensor Value: {value}")
+            # Add your processing or logic for sound sensor data here
 
 if __name__ == "__main__":
-    receive_data()
+    receive_sensor_data()
