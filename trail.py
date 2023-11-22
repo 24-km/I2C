@@ -1,25 +1,17 @@
-#  Raspberry Pi Master for Arduino Slave
-#  i2c_master_pi.py
-#  Connects to Arduino via I2C
-  
-#  DroneBot Workshop 2019
-#  https://dronebotworkshop.com
-
 from smbus import SMBus
+import time
 
-addr = 0x8 # bus address
-bus = SMBus(1) # indicates /dev/ic2-1
+addr = 0x8  # Arduino's I2C address
+bus = SMBus(1)  # I2C bus number (Raspberry Pi 4 uses bus 1)
 
-numb = 1
+def receive_sensor_data():
+    try:
+        while True:
+            data = bus.read_byte(addr)  # Read sensor data from Arduino
+            print("Received Vibration Sensor Value:", data)
+            time.sleep(1)  # Adjust delay as needed
+    except KeyboardInterrupt:
+        pass
 
-print ("Enter 1 for ON or 0 for OFF")
-while numb == 1:
-
-	ledstate = input(">>>>   ")
-
-	if ledstate == "1":
-		bus.write_byte(addr, 0x1) # switch it on
-	elif ledstate == "0":
-		bus.write_byte(addr, 0x0) # switch it on
-	else:
-		numb = 0
+if __name__ == "__main__":
+    receive_sensor_data()
