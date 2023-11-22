@@ -1,17 +1,20 @@
-from smbus import SMBus
+import smbus
 import time
+import sys
 
-addr = 0x8  # Arduino's I2C address
-bus = SMBus(1)  # I2C bus number (Raspberry Pi 4 uses bus 1)
+bus = smbus.SMBus(1)
+address = 0x04  # Arduino I2C Address
 
-def receive_sensor_data():
+def main():
+    while True:
+        # Request data from Arduino
+        data = bus.read_byte(address)
+        print("Received from Arduino:", data)
+        
+        time.sleep(1)  # Adjust delay as needed
+
+if __name__ == '__main__':
     try:
-        while True:
-            data = bus.read_byte(addr)  # Read sensor data from Arduino
-            print("Received Vibration Sensor Value:", data)
-            time.sleep(1)  # Adjust delay as needed
+        main()
     except KeyboardInterrupt:
-        pass
-
-if __name__ == "__main__":
-    receive_sensor_data()
+        sys.exit(0)
