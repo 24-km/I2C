@@ -1,25 +1,23 @@
 import smbus
 import time
 
-address = 9 # Arduino I2C address
+address = 0x9  # Replace this with the address used by your Arduino master
 bus = smbus.SMBus(1)  # 1 indicates /dev/i2c-1
 
-def read_vibration_value():
+def receive_from_arduino():
     try:
-        value = bus.read_byte(address)
-        return value
+        data = bus.read_byte(address)
+        return data
     except Exception as e:
         print(f"Error: {e}")
         return None
 
 try:
     while True:
-        vibration_value = read_vibration_value()
-
-        if vibration_value is not None:
-            print(f"Vibration Value: {vibration_value}")
-
-        time.sleep(1)  # Adjust the sleep time based on your needs
+        value = receive_from_arduino()
+        if value is not None:
+            print(f"Received Data from Arduino: {value}")
+        time.sleep(1)  # Adjust the sleep time based on your requirements
 
 except KeyboardInterrupt:
     print("Program terminated by the user.")
