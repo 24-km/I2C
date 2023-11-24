@@ -1,36 +1,25 @@
-import serial
+import smbus
 import time
 
-# Establish serial connection with the Arduino
-ser = serial.Serial('/dev/ttyACM0', 9600)  # Replace '/dev/ttyACM0' with the correct port
+address = 9 # Arduino I2C address
+bus = smbus.SMBus(1)  # 1 indicates /dev/i2c-1
 
-def receive_sensor_data():
+def read_vibration_value():
     try:
-        while True:
-            if ser.in_waiting > 0:
-                # Read data from Arduino
-                data = ser.readline().decode('utf-8').rstrip()
-                process_sensor_data(data)
-            
-            time.sleep(1)  # Adjust delay as needed
-    except KeyboardInterrupt:
-        ser.close()
+        value = bus.read_byte(address)
+        return value
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
-def process_sensor_data(data):
-    # Split the received data based on the sensor identifier
-    sensor_data = data.split(':')
-    if len(sensor_data) == 2:
-        sensor_type, value = sensor_data[0], sensor_data[1]
-        
-        if sensor_type == 'VIBRATION':
-            print(f"Received Vibration Sensor Value: {value}")
-            # Add your processing or logic for vibration sensor data here
-        elif sensor_type == 'SPEED':
-            print(f"Received Speed Value: {value}")
-            # Add your processing or logic for speed data here
-        elif sensor_type == 'SOUND':
-            print(f"Received Sound Sensor Value: {value}")
-            # Add your processing or logic for sound sensor data here
+try:
+    while True:
+        vibration_value = read_vibration_value()
 
-if __name__ == "__main__":
-    receive_sensor_data()
+        if vibration_value is not None:
+            print(f"Vibration Value: {vibration_value}")
+
+        time.sleep(1)  # Adjust the sleep time based on your needs
+
+except KeyboardInterrupt:
+    print("Program terminated by the user.")
